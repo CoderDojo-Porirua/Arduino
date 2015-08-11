@@ -1,3 +1,5 @@
+//Noise detection sample code taken from https://learn.adafruit.com/adafruit-microphone-amplifier-breakout/measuring-sound-levels
+
 const int sampleWindow = 50; // Sample window width in mS (50 mS = 20Hz)
 unsigned int sample;
  
