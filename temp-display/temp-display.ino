@@ -153,12 +153,14 @@ void loop()
       Serial.print("temperature: ");
       Serial.print(T,2);
       Serial.print(" deg C\n");
+      
+      setAllPixels(temperatureToColour(T));
     }
     else Serial.println("error retrieving temperature measurement\n");
   }
   else Serial.println("error starting temperature measurement\n");
 
-  delay(500);  // Pause for 5 seconds.
+  //delay(500);  // Pause for 5 seconds.
 }
 
 void setAllPixels(int r, int g, int b)
@@ -168,3 +170,52 @@ void setAllPixels(int r, int g, int b)
   }
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
+
+void setAllPixels(uint32_t colour)
+{
+  for(int i=0;i<NUMPIXELS;i++){
+    pixels.setPixelColor(i, colour); 
+  }
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+
+uint32_t temperatureToColour(double temperature){
+  // 0 - 17 - Blue
+  // 18-22 Green
+  // 23 - 35 Red
+  double greenMin = 17.0;
+  double greenMax = 27.0;
+  int red = 0;
+  int green = 0;
+  int blue = 0;
+  
+
+  if(temperature<greenMin){
+    red = 0;
+    green = 0;
+    blue = 255;
+  } else
+  {
+    if(temperature>greenMax){
+      red = 255;
+      green = 0;
+      blue = 0;      
+    } else
+    {
+
+      double greenRange = greenMax - greenMin;
+      // Convert temp into number between 0 and 1.
+      double temperatureGreenRange = (temperature - greenMin) / (greenRange);
+      // 0 -> 0.5 blue -> green
+      // 0.5 -> 1 green -> red
+
+      blue = 63 * (1.0 -(min((temperatureGreenRange/0.5), 1.0)));
+      red = 63 * (max(((temperatureGreenRange-0.5)/0.5), 0));
+      green = 63 - blue - red;
+    }
+  }
+  
+  return pixels.Color(red, green, blue);
+
+}
+
