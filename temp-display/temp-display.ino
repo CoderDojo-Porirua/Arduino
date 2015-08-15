@@ -155,6 +155,7 @@ void loop()
       Serial.print(" deg C\n");
       
       setAllPixels(temperatureToColour(T));
+      //pixels.setBrightness(150);
     }
     else Serial.println("error retrieving temperature measurement\n");
   }
