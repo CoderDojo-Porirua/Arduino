@@ -12,3 +12,4 @@ Temperature sensing
 -------------------
 
 - https://learn.sparkfun.com/tutorials/bmp180-barometric-pressure-sensor-hookup-
+  - BMP180 library can be downloaded from https://github.com/sparkfun/BMP180_Breakout/
