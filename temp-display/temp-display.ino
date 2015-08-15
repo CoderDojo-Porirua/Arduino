@@ -65,6 +65,8 @@ V1.1.2 Updates for Arduino 1.6.4 5/2015
 // Your sketch must #include this library, and the Wire library.
 // (Wire is a standard library included with Arduino.):
 
+#include <Adafruit_NeoPixel.h>
+
 #include <SFE_BMP180.h>
 #include <Wire.h>
 
@@ -72,7 +74,21 @@ V1.1.2 Updates for Arduino 1.6.4 5/2015
 
 SFE_BMP180 pressure;
 
-#define ALTITUDE 1655.0 // Altitude of SparkFun's HQ in Boulder, CO. in meters
+#define PIN 8
+
+// How many NeoPixels are attached to the Arduino?
+#define NUMPIXELS      16
+
+ 
+// Parameter 1 = number of pixels in strip
+// Parameter 2 = pin number (most are valid)
+// Parameter 3 = pixel type flags, add together as needed:
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(60, PIN, NEO_GRB + NEO_KHZ800);
+
 
 void setup()
 {
@@ -81,14 +97,30 @@ void setup()
 
   // Initialize the sensor (it is important to get calibration values stored on the device).
 
-  if (pressure.begin())
+  pixels.begin();
+  pixels.show(); // Initialize all pixels to 'off'
+
+  if (pressure.begin()){
     Serial.println("BMP180 init success");
+
+    setAllPixels(0,25,0);    
+    delay(500);
+    setAllPixels(0,0,25);    
+    delay(500);
+    setAllPixels(25,25,25);    
+    delay(500);
+    setAllPixels(0,0,0);    
+    delay(500);
+  }
   else
   {
     // Oops, something went wrong, this is usually a connection problem,
     // see the comments at the top of this sketch for the proper connections.
 
     Serial.println("BMP180 init fail\n\n");
+    setAllPixels(25,0,0);
+    
+
     while(1); // Pause forever.
   }
 }
@@ -127,4 +159,12 @@ void loop()
   else Serial.println("error starting temperature measurement\n");
 
   delay(500);  // Pause for 5 seconds.
+}
+
+void setAllPixels(int r, int g, int b)
+{
+  for(int i=0;i<NUMPIXELS;i++){
+    pixels.setPixelColor(i, pixels.Color(r,g,b)); 
+  }
+  pixels.show(); // This sends the updated pixel color to the hardware.
 }
